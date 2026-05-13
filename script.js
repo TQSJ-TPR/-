@@ -223,6 +223,7 @@ const blogs = [
             <div class="tab-content active" id="system-Resource">
                 <div class="tool-grid">
                     <a href='https://next.itellyou.cn/' target='_blank'><div class="tool-item"><div class="tool-text">纯净系统下载</div></div></a>
+                    <a href='https://www.tbtool.cn/' target='_blank'><div class="tool-item"><div class="tool-text">图吧工具箱</div></div></a>
                 </div>
             </div>
             <div class="tab-content" id="game-Resource">

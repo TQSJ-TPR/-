@@ -305,13 +305,13 @@ body {
 }
 
 section#blog-list > article.blog-post:nth-child(1) > div.nested-tabs > div.tab-buttons {
-    margin-left: -30px;
-    margin-right: -30px;
+    margin-left: -6px;
+    margin-right: -6px;
 }
 
 section#blog-list > article.blog-post:nth-child(2) > div.nested-tabs > div.tab-buttons {
-    margin-left: -30px;
-    margin-right: -30px;
+    margin-left: -6px;
+    margin-right: -6px;
 }
 
 .tab-btn {
