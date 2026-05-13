@@ -10,6 +10,39 @@
     user-select: none;
 }
 
+/* 全局无下划线样式 */
+a,
+a:link,
+a:visited,
+a:hover,
+a:active,
+a:focus,
+a::before,
+a::after,
+a *,
+.tool-item,
+.tool-text,
+.contact-link,
+.contact-link::before,
+.contact-link::after,
+.contact-link *,
+.header nav a,
+.header nav a:link,
+.header nav a:visited,
+.header nav a:hover,
+.header nav a:active,
+.header nav a:focus,
+.header nav a::before,
+.header nav a::after,
+.tool-item a,
+.blog-post a {
+    text-decoration: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    background-image: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}
+
 *::-webkit-scrollbar {
     width: 0 !important;
     display: none;
@@ -43,145 +76,29 @@ body {
     overflow-y: auto;
 }
 
-* {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
+/* 桌面端自定义光标 */
+@media (min-width: 769px) {
+    * {
+        cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
+    }
 
-a,
-button,
-input,
-textarea,
-select,
-[role="button"],
-.clickable,
-.pointer,
-.tool-item,
-.contact-link,
-.contact-text,
-.settings-btn,
-.theme-toggle,
-.back-to-top,
-.player-controls button,
-.volume-btn,
-.reset-btn,
-.settings-close,
-.counter-text,
-.tooltip {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-a:hover,
-button:hover,
-input:hover,
-textarea:hover,
-select:hover,
-[role="button"]:hover,
-.clickable:hover,
-.pointer:hover,
-.tool-item:hover,
-.contact-link:hover,
-.contact-text:hover,
-.settings-btn:hover,
-.theme-toggle:hover,
-.back-to-top:hover,
-.player-controls button:hover,
-.volume-btn:hover,
-.reset-btn:hover,
-.settings-close:hover,
-.counter-text:hover,
-.tooltip:hover {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-a:active,
-button:active,
-input:active,
-textarea:active,
-select:active,
-[role="button"]:active,
-.clickable:active,
-.pointer:active,
-.tool-item:active,
-.contact-link:active,
-.contact-text:active,
-.settings-btn:active,
-.theme-toggle:active,
-.back-to-top:active,
-.player-controls button:active,
-.volume-btn:active,
-.reset-btn:active,
-.settings-close:active,
-.counter-text:active,
-.tooltip:active {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-a:focus,
-button:focus,
-input:focus,
-textarea:focus,
-select:focus,
-[role="button"]:focus,
-.clickable:focus,
-.pointer:focus,
-.tool-item:focus,
-.contact-link:focus,
-.contact-text:focus,
-.settings-btn:focus,
-.theme-toggle:focus,
-.back-to-top:focus,
-.player-controls button:focus,
-.volume-btn:focus,
-.reset-btn:focus,
-.settings-close:focus,
-.counter-text:focus,
-.tooltip:focus {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-a:disabled,
-button:disabled,
-input:disabled,
-textarea:disabled,
-select:disabled,
-[role="button"]:disabled {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-a:visited,
-a:link {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-[draggable="true"],
-.draggable {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-[draggable="true"]:active,
-.draggable:active {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-.progress-bar,
-.volume-bar,
-input[type="range"] {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-.progress-bar:hover,
-.volume-bar:hover,
-input[type="range"]:hover {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-body.loading,
-body.waiting {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
-}
-
-body:not(:hover) {
-    cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
+    a,
+    button,
+    input,
+    textarea,
+    select,
+    [role="button"],
+    .tool-item,
+    .contact-link,
+    .contact-text,
+    .settings-btn,
+    .theme-toggle,
+    .back-to-top,
+    .reset-btn,
+    .settings-close,
+    .tooltip {
+        cursor: url('./img/米哈游启动器图标.png') 16 16, auto !important;
+    }
 }
 
 /* 背景层 - 独立于其他元素 */
@@ -217,6 +134,7 @@ body:not(:hover) {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 70px;
 }
 
 .header.hidden {
@@ -242,24 +160,29 @@ body:not(:hover) {
     margin: 0 16px;
     text-decoration: none;
     color: var(--primary-color);
-    font-size: 1.08rem;
-    transition: color var(--transition-speed), background var(--transition-speed);
+    transition: color var(--transition-speed), background var(--transition-speed), transform var(--transition-speed);
     position: relative;
-    padding: 2px 6px;
-    border-radius: 4px;
-    text-shadow: 0 1px 3px rgba(139, 92, 246, 0.2);
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 40px;
+    overflow: visible;
 }
 
 .header nav a:hover {
     color: #fff;
     background: linear-gradient(135deg, var(--primary-color), #a855f7);
     box-shadow: 0 2px 12px var(--primary-glow);
+    transform: scale(1.1);
 }
 
 /* 主内容区 */
 .main-content {
     max-width: 800px;
-    margin: 100px auto 0;
+    margin: 90px auto 0;
     padding: 0 20px;
     position: relative;
     z-index: 2;
@@ -286,8 +209,8 @@ body:not(:hover) {
     padding: 30px 28px;
     border: 1px solid var(--card-border);
     transition: var(--transition-layout),
-        box-shadow var(--transition-speed),
-        transform 0.15s ease-out;
+        box-shadow 0.4s ease-out,
+        transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     opacity: 0;
     will-change: opacity, box-shadow;
     perspective: 1000px;
@@ -311,13 +234,6 @@ body:not(:hover) {
     font-size: 1.7rem;
     font-weight: 600;
     text-shadow: 0 2px 4px rgba(124, 58, 237, 0.15);
-}
-
-.blog-post .meta {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    margin-bottom: 16px;
-    text-shadow: 0 1px 2px rgba(91, 33, 182, 0.1);
 }
 
 .blog-post p {
@@ -345,8 +261,8 @@ body:not(:hover) {
     padding: 15px;
     text-align: center;
     cursor: pointer;
-    transition: transform var(--transition-speed),
-        box-shadow var(--transition-speed),
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        box-shadow 0.4s ease-out,
         background-color var(--transition-speed);
     word-break: break-word;
     overflow: hidden;
@@ -498,78 +414,81 @@ pre {
         padding-bottom: 80px;
     }
 
-    .header h1 {
-        font-size: 1.8rem;
-    }
-
-    .main-content {
-        padding: 0 16px;
-    }
-
-    .blog-post {
-        padding: 24px 20px;
-    }
-
-    .blog-post h2 {
-        font-size: 1.4rem;
-    }
-
-    .blog-post p {
-        font-size: 1rem;
-    }
-
-    .contact-link,
-    .contact-text {
-        font-size: 1.4rem;
-    }
-
-    .contact-gif {
-        width: 100px;
-        height: 100px;
-    }
-
-    .contact-info {
-        gap: 25px;
-    }
-}
-
-/* 响应式设计 - 手机设备 */
-@media (max-width: 600px) {
     .header {
-        padding: 0 12px;
+        height: 56px;
+        padding: 0 16px;
+        flex-direction: row;
+        align-items: center;
     }
 
     .header h1 {
         font-size: 1.5rem;
+        margin: 0;
     }
 
     .header nav {
-        gap: 10px;
+        gap: 8px;
     }
 
     .header nav a {
-        font-size: 1rem;
-        margin: 0 10px;
+        font-size: 0.9rem;
+        margin: 0 8px;
+    }
+
+    .theme-toggle,
+    .settings-btn {
+        width: 34px;
+        height: 34px;
+    }
+
+    .icon-svg {
+        width: 18px;
+        height: 18px;
     }
 
     .main-content {
-        padding: 0 12px;
-        margin-top: 80px;
+        padding: 0 16px;
+        margin-top: 76px;
     }
 
     .blog-post {
-        padding: 18px 14px;
+        padding: 20px 16px;
+        border-radius: 14px;
     }
 
     .blog-post h2 {
-        font-size: 1.2rem;
+        font-size: 1.35rem;
     }
 
     .blog-post p {
-        font-size: 0.9rem;
+        font-size: 1rem;
+        line-height: 1.7;
     }
 
-    .contact-link,
+    .tool-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+        padding: 16px;
+    }
+
+    .tool-item {
+        padding: 14px 10px;
+        min-height: 60px;
+    }
+
+    .tool-text {
+        font-size: 1rem;
+    }
+
+    .contact-info {
+        gap: 20px;
+        padding: 16px 0;
+    }
+
+    .contact-link {
+        font-size: 1.4rem;
+    }
+
     .contact-text {
         font-size: 1.3rem;
     }
@@ -579,47 +498,119 @@ pre {
         height: 90px;
     }
 
-    .contact-info {
-        gap: 20px;
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .player-controls button {
-        width: 34px;
-        height: 34px;
-    }
-
-    .progress-bar {
-        min-width: 150px;
+    .back-to-top {
+        width: 48px;
+        height: 48px;
+        bottom: 20px;
+        right: 20px;
     }
 }
 
-/* 响应式设计 - 小屏手机 */
-@media (max-width: 400px) {
+/* 响应式设计 - 手机设备 */
+@media (max-width: 600px) {
+    .header {
+        padding: 0 12px;
+        height: 52px;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .header h1 {
+        font-size: 1.3rem;
+        margin: 0;
+    }
+
     .header nav {
-        display: flex;
-        flex-direction: column;
         gap: 6px;
     }
 
     .header nav a {
-        margin: 0;
+        font-size: 0.85rem;
+        margin: 0 6px;
+    }
+
+    .theme-toggle,
+    .settings-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .icon-svg {
+        width: 16px;
+        height: 16px;
     }
 
     .main-content {
-        padding: 0 8px;
+        padding: 0 12px;
+        margin-top: 68px;
+    }
+
+    .blog-list {
+        gap: 16px;
     }
 
     .blog-post {
-        padding: 16px 12px;
+        padding: 16px 14px;
+        border-radius: 12px;
     }
 
-    .contact-link,
-    .contact-text {
+    .blog-post h2 {
         font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+
+    .blog-post p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .tool-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 14px;
+        margin-top: 14px;
+    }
+
+    .tool-item {
+        padding: 16px 12px;
+        min-height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+
+    .tool-text {
+        font-size: 1rem;
+        white-space: normal;
+        line-height: 1.4;
+    }
+
+    .contact-info {
+        gap: 16px;
+        padding: 14px 0;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .contact-link {
+        font-size: 1.3rem;
+        display: block;
         width: 100%;
         text-align: center;
+        padding: 12px;
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 12px;
+    }
+
+    .contact-text {
+        font-size: 1.2rem;
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+        background: rgba(139, 92, 246, 0.1);
+        border-radius: 12px;
     }
 
     .contact-gif {
@@ -627,14 +618,126 @@ pre {
         height: 80px;
     }
 
-    .contact-info {
-        gap: 15px;
-        padding: 10px 0;
+    .back-to-top {
+        width: 44px;
+        height: 44px;
+        bottom: 16px;
+        right: 16px;
+    }
+
+    .player-controls button {
+        width: 36px;
+        height: 36px;
+    }
+
+    .progress-bar {
+        min-width: 120px;
     }
 
     .settings-panel {
         width: 100%;
         max-width: 100vw;
+        border-radius: 16px 16px 0 0;
+        top: auto;
+        bottom: 0;
+        height: auto;
+        max-height: 80vh;
+    }
+}
+
+/* 响应式设计 - 小屏手机 */
+@media (max-width: 400px) {
+    .header {
+        height: 50px;
+        padding: 0 10px;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .header h1 {
+        font-size: 1.2rem;
+        margin: 0;
+    }
+
+    .header nav {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+    }
+
+    .header nav a {
+        margin: 0;
+        font-size: 0.8rem;
+    }
+
+    .theme-toggle,
+    .settings-btn {
+        width: 30px;
+        height: 30px;
+    }
+
+    .icon-svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .main-content {
+        padding: 0 10px;
+        margin-top: 66px;
+    }
+
+    .blog-post {
+        padding: 14px 12px;
+        border-radius: 10px;
+    }
+
+    .blog-post h2 {
+        font-size: 1.1rem;
+    }
+
+    .blog-post p {
+        font-size: 0.9rem;
+    }
+
+    .tool-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .tool-item {
+        padding: 14px 10px;
+        min-height: 60px;
+    }
+
+    .tool-text {
+        font-size: 0.95rem;
+    }
+
+    .contact-link {
+        font-size: 1.2rem;
+        padding: 10px;
+    }
+
+    .contact-text {
+        font-size: 1.1rem;
+        padding: 10px;
+    }
+
+    .contact-gif {
+        width: 70px;
+        height: 70px;
+    }
+
+    .contact-info {
+        gap: 12px;
+    }
+
+    .back-to-top {
+        width: 42px;
+        height: 42px;
+        bottom: 12px;
+        right: 12px;
     }
 }
 
@@ -650,11 +753,7 @@ pre {
         transition-delay: 0ms !important;
     }
 
-    .blog-post,
-    .visit-stats-card,
-    .music-player-container,
-    .music-player,
-    .player-controls button {
+    .blog-post {
         transition: none !important;
         opacity: 1 !important;
         transform: none !important;
@@ -713,9 +812,7 @@ pre {
     box-shadow: 0 8px 32px rgba(167, 139, 250, 0.25);
 }
 
-[data-theme="dark"] .blog-post,
-[data-theme="dark"] .visit-stats-card,
-[data-theme="dark"] .music-player-container {
+[data-theme="dark"] .blog-post {
     background: var(--card-bg);
     backdrop-filter: blur(16px) saturate(180%);
     -webkit-backdrop-filter: blur(16px) saturate(180%);
@@ -807,6 +904,15 @@ pre {
     height: 22px;
     stroke: currentColor;
     transition: stroke var(--transition-speed) ease;
+}
+
+/* GitHub图标专用样式 */
+.header nav a .icon-svg {
+    width: 26px;
+    height: 26px;
+    fill: currentColor;
+    padding: 0;
+    overflow: visible;
 }
 
 .player-controls button .icon-svg {
@@ -1064,28 +1170,6 @@ pre {
     color: #fff;
     box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
     transform: translateY(-2px);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translate(-50%, -40%);
-    }
-
-    to {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-    }
 }
 
 @keyframes flashIn {

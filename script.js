@@ -213,23 +213,37 @@ function adjustToolItemTextSize() {
     });
 }
 
-function showTooltip(element, text) {
+/**
+ * 通用的显示tooltip函数
+ * @param {HTMLElement} element - 要附加tooltip的元素
+ * @param {string} text - tooltip的内容
+ * @param {Object} options - 可选配置
+ * @param {string} options.customClass - 自定义类名
+ * @param {string} options.customStyle - 自定义样式
+ * @param {number} options.duration - 自动隐藏的时长（毫秒），不设置则不自动隐藏
+ */
+function showTooltip(element, text, options = {}) {
     const existingTooltip = document.querySelector('.tooltip');
     if (existingTooltip) {
         existingTooltip.remove();
     }
     
     const tooltip = document.createElement('div');
-    tooltip.className = 'tooltip';
+    tooltip.className = 'tooltip' + (options.customClass ? ' ' + options.customClass : '');
     tooltip.textContent = text;
+    if (options.customStyle) {
+        tooltip.style.cssText = options.customStyle;
+    }
     document.body.appendChild(tooltip);
     
+    // 计算tooltip位置
     const rect = element.getBoundingClientRect();
     const tooltipRect = tooltip.getBoundingClientRect();
     
     let left = rect.left + (rect.width - tooltipRect.width) / 2;
     let top = rect.top - tooltipRect.height - 8;
     
+    // 边界检查
     if (left < 5) left = 5;
     if (left + tooltipRect.width > window.innerWidth - 5) {
         left = window.innerWidth - tooltipRect.width - 5;
@@ -244,6 +258,20 @@ function showTooltip(element, text) {
     requestAnimationFrame(() => {
         tooltip.classList.add('show');
     });
+    
+    // 如果设置了duration，自动隐藏
+    if (options.duration) {
+        setTimeout(() => {
+            tooltip.classList.remove('show');
+            setTimeout(() => {
+                if (tooltip.parentNode) {
+                    tooltip.remove();
+                }
+            }, 300);
+        }, options.duration);
+    }
+    
+    return tooltip;
 }
 
 function hideTooltip() {
@@ -251,7 +279,9 @@ function hideTooltip() {
     if (tooltip) {
         tooltip.classList.remove('show');
         setTimeout(() => {
-            tooltip.remove();
+            if (tooltip.parentNode) {
+                tooltip.remove();
+            }
         }, 300);
     }
 }
@@ -285,39 +315,11 @@ function fallbackCopy(text, element) {
 }
 
 function showCopySuccess(element) {
-    hideTooltip();
-    
-    const tooltip = document.createElement('div');
-    tooltip.className = 'tooltip copy-success-tooltip';
-    tooltip.textContent = '邮箱已复制到剪贴板！';
-    tooltip.style.cssText = 'background:#10b981;color:#fff;';
-    document.body.appendChild(tooltip);
-    
-    const rect = element.getBoundingClientRect();
-    const tooltipRect = tooltip.getBoundingClientRect();
-    
-    let left = rect.left + (rect.width - tooltipRect.width) / 2;
-    let top = rect.top - tooltipRect.height - 8;
-    
-    if (left < 5) left = 5;
-    if (left + tooltipRect.width > window.innerWidth - 5) {
-        left = window.innerWidth - tooltipRect.width - 5;
-    }
-    if (top < 5) {
-        top = rect.bottom + 8;
-    }
-    
-    tooltip.style.left = left + 'px';
-    tooltip.style.top = top + 'px';
-    
-    requestAnimationFrame(() => {
-        tooltip.classList.add('show');
+    showTooltip(element, '邮箱已复制到剪贴板！', {
+        customClass: 'copy-success-tooltip',
+        customStyle: 'background:#10b981;color:#fff;',
+        duration: 2000
     });
-    
-    setTimeout(() => {
-        tooltip.classList.remove('show');
-        setTimeout(() => tooltip.remove(), 300);
-    }, 2000);
 }
 
 function setupTooltips() {
@@ -365,6 +367,17 @@ function setupHeaderScroll() {
 
 window.addEventListener('resize', debounce(() => {
     adjustToolItemTextSize();
+    
+    // 根据窗口宽度动态启用/禁用3D效果
+    if (window.innerWidth >= 768) {
+        setupCard3DEffect();
+    } else {
+        // 移除3D效果相关的事件监听器
+        document.querySelectorAll('.blog-post, .tool-item, .contact-gif').forEach(card => {
+            card.style.transform = '';
+            card.style.boxShadow = '';
+        });
+    }
 }, 250));
 
 function setupThemeToggle() {
@@ -463,18 +476,8 @@ function setupKeyboardShortcuts() {
     });
 }
 
-function setupParallaxEffect() {
-    const gridBackground = document.querySelector('.grid-background');
-    if (!gridBackground) return;
-
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        gridBackground.style.transform = `translateY(${scrolled * 0.3}px)`;
-    }, { passive: true });
-}
-
 function setupCard3DEffect() {
-    document.querySelectorAll('.blog-post, .tool-item, .visit-stats-card, .music-player-container, .contact-gif').forEach(card => {
+    document.querySelectorAll('.blog-post, .tool-item, .contact-gif').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -525,7 +528,6 @@ function initMainContent() {
     setupBackToTop();
     setupKeyboardShortcuts();
     secureExternalLinks();
-    setupParallaxEffect();
     loadBackgroundImage();
     setupSettingsPanel();
 }
@@ -534,9 +536,12 @@ document.addEventListener('loadingComplete', () => {
     initMainContent();
     startCardAnimation();
     
-    setTimeout(() => {
-        setupCard3DEffect();
-    }, 1500);
+    // 只在桌面端启用3D悬停动画
+    if (window.innerWidth >= 768) {
+        setTimeout(() => {
+            setupCard3DEffect();
+        }, 1500);
+    }
 });
 
 function secureExternalLinks() {
@@ -585,7 +590,7 @@ function setupSettingsPanel() {
     if (!settingsBtn || !settingsModal) return;
     
     const defaultSettings = {
-        blur: 20,
+        blur: 10,
         brightness: 100
     };
     
