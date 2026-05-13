@@ -1,4 +1,23 @@
-(function() {
+function loadImage(url, options = {}) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        if (options.crossOrigin) {
+            img.crossOrigin = options.crossOrigin;
+        }
+
+        img.onload = function () {
+            resolve(img);
+        };
+
+        img.onerror = function () {
+            reject(new Error(`Failed to load image: ${url}`));
+        };
+
+        img.src = url;
+    });
+}
+
+(function () {
     const loadingScreen = document.getElementById('loading-screen');
     const loadingBarVertical = document.getElementById('loading-bar-vertical');
     const loadingPercentage = document.getElementById('loading-percentage');
@@ -22,7 +41,7 @@
         const barHeight = (progress / 100) * viewportHeight;
         loadingBarVertical.style.height = `${barHeight}px`;
         loadingPercentage.textContent = `${Math.round(progress)}%`;
-        
+
         if (loadingContent) {
             const contentHeight = loadingContent.offsetHeight || 100;
             const maxTop = viewportHeight - contentHeight - 50;
@@ -41,7 +60,7 @@
                 if (loadingScreen.parentNode) {
                     loadingScreen.remove();
                 }
-                
+
                 const event = new CustomEvent('loadingComplete');
                 document.dispatchEvent(event);
             }, fadeOutDuration);
@@ -74,36 +93,24 @@
         requestAnimationFrame(animate);
     }
 
-    function loadBackgroundImageFirst() {
+    async function loadBackgroundImageFirst() {
         const bgUrl = 'https://t.alcy.cc/ycy';
-        const img = new Image();
-        
-        img.onload = function() {
+
+        try {
+            await loadImage(bgUrl);
             loadingScreen.style.backgroundImage = `url('${bgUrl}')`;
-            
-            setTimeout(() => {
-                if (loadingBarVertical && loadingContent) {
-                    loadingBarVertical.style.opacity = '1';
-                    loadingContent.style.opacity = '1';
-                }
-                simulateLoading();
-            }, 400);
-        };
-        
-        img.onerror = function() {
+        } catch {
             console.warn('背景图加载失败，使用黑色背景');
             loadingScreen.style.backgroundColor = '#000000';
-            
-            setTimeout(() => {
-                if (loadingBarVertical && loadingContent) {
-                    loadingBarVertical.style.opacity = '1';
-                    loadingContent.style.opacity = '1';
-                }
-                simulateLoading();
-            }, 400);
-        };
-        
-        img.src = bgUrl;
+        }
+
+        setTimeout(() => {
+            if (loadingBarVertical && loadingContent) {
+                loadingBarVertical.style.opacity = '1';
+                loadingContent.style.opacity = '1';
+            }
+            simulateLoading();
+        }, 400);
     }
 
     document.addEventListener('DOMContentLoaded', loadBackgroundImageFirst);
@@ -111,33 +118,132 @@
 
 const blogs = [
     {
-        title: '常用工具',
+        title: '工具',
         content: `
-            <div class="tool-grid">
-                <a href='https://webrename.cn/'><div class="tool-item"><div class="tool-text">文件批量命名</div></div></a>
-                <a href='https://www.mchose.com.cn/#/connectDevice'><div class="tool-item"><div class="tool-text">迈从网页驱动</div></div></a>
-                <a href='https://www.kimi.com/'><div class="tool-item"><div class="tool-text">Kimi</div></div></a>
-                <a href='https://apkcombo.com/zh/'><div class="tool-item"><div class="tool-text">Google软件下载</div></div></a>
-                <a href='https://ocr.wdku.net/'><div class="tool-item"><div class="tool-text">OCR工具</div></div></a>
-                <a href='https://ai.animedb.cn/'><div class="tool-item"><div class="tool-text">以图识番</div></div></a>
-                <a href='https://www.saucenao.cn/'><div class="tool-item"><div class="tool-text">以图识图</div></div></a>
-                <a href='https://www.v2ob.com/bilibili'><div class="tool-item"><div class="tool-text">B站视频解析</div></div></a>
+            <div class="nested-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="common-tools">图片工具</button>
+                    <button class="tab-btn" data-tab="video-tools">视频工具</button>
+                    <button class="tab-btn" data-tab="audio-tools">音频工具</button>
+                    <button class="tab-btn" data-tab="ai-tools">AI工具</button>
+                    <button class="tab-btn" data-tab="file-tools">文件工具</button>
+                    <button class="tab-btn" data-tab="download-tools">下载工具</button>
+                    <button class="tab-btn" data-tab="web-tools">网页驱动</button>
+                    <button class="tab-btn" data-tab="other-tools">其他工具</button>
+                </div>
+                <div class="tab-content active" id="common-tools">
+                    <div class="tool-grid">
+                        <a href='https://ocr.wdku.net/' target='_blank'><div class="tool-item"><div class="tool-text">OCR工具</div></div></a>
+                        <a href='https://ai.animedb.cn/' target='_blank'><div class="tool-item"><div class="tool-text">以图识番</div></div></a>
+                        <a href='https://www.saucenao.cn/' target='_blank'><div class="tool-item"><div class="tool-text">以图识图</div></div></a>
+                        <a href='https://photokit.com/editor/?lang=zh' target='_blank'><div class="tool-item"><div class="tool-text">图片编辑器</div></div></a>
+                        <a href='https://zh.qr-code.net/' target='_blank'><div class="tool-item"><div class="tool-text">二维码生成器</div></div></a>
+                        <a href='https://imgonline.tools/zh/' target='_blank'><div class="tool-item"><div class="tool-text">图片工具包-1</div></div></a>
+                        <a href='https://www.iloveimg.com/zh-cn' target='_blank'><div class="tool-item"><div class="tool-text">图片工具包-2</div></div></a>
+                        <a href='https://d2n.moe/petpet-js/' target='_blank'><div class="tool-item"><div class="tool-text">预制表情包</div></div></a>
+                        <a href='https://images.batchtool.com/zh?utm_source=ai-bot.cn' target='_blank'><div class="tool-item"><div class="tool-text">图片抠图</div></div></a>
+                        <a href='https://bigjpg.com/' target='_blank'><div class="tool-item"><div class="tool-text">图片无损放大</div></div></a>
+                        <a href='https://www.mergepictures.net/zh-CN' target='_blank'><div class="tool-item"><div class="tool-text">图片拼接</div></div></a>
+                        <a href='https://www.abtool.cn/image_compre' target='_blank'><div class="tool-item"><div class="tool-text">图片压缩</div></div></a>
+                    </div>
+                </div>
+                <div class="tab-content" id="video-tools">
+                    <div class="tool-grid">
+                        <a href='https://www.aigei.com/tool/video' target='_blank'><div class="tool-item"><div class="tool-text">视频编辑器</div></div></a>
+                        <a href='https://pv.vlogdownloader.com/' target='_blank'><div class="tool-item"><div class="tool-text">网址视频解析-1</div></div></a>
+                        <a href='https://zh.get-save.net/1-video-downloader/' target='_blank'><div class="tool-item"><div class="tool-text">网址视频解析-2</div></div></a>
+                        <a href='https://www.hellotik.app/zh' target='_blank'><div class="tool-item"><div class="tool-text">网址视频解析-3</div></div></a>
+                        <a href='https://www.redpandacompress.com/zh/' target='_blank'><div class="tool-item"><div class="tool-text">视频压缩-1</div></div></a>
+                        <a href='https://dojoclip.com/zh/video-compressor' target='_blank'><div class="tool-item"><div class="tool-text">视频压缩-2</div></div></a>
+                        <a href='https://offlineconverter.com/cn/video/mkv-to-gif/' target='_blank'><div class="tool-item"><div class="tool-text">视频转GIF</div></div></a>
+                    </div>
+                </div>
+                <div class="tab-content" id="audio-tools">
+                <div class="tool-grid"> 
+                <a href='https://www.aigei.com/tool/video/audio-to-video' target='_blank'><div class="tool-item"><div class="tool-text">视频转音频</div></div></a>
+                <a href='https://freecompress.com/zh-cn/compress-audio/' target='_blank'><div class="tool-item"><div class="tool-text">音频压缩</div></div></a>
+                <a href='https://www.vocu.ai/' target='_blank'><div class="tool-item"><div class="tool-text">语音合成</div></div></a>
+                <a href='https://realdubbing.com/zh/' target='_blank'><div class="tool-item"><div class="tool-text">TTS文本转语音</div></div></a>
+                <a href='https://fish.audio/zh-CN/app/text-to-speech/' target='_blank'><div class="tool-item"><div class="tool-text">语音克隆</div></div></a>
+                <a href='https://vocalremover.org/zh/' target='_blank'><div class="tool-item"><div class="tool-text">音频人声分离</div></div></a>
+                <a href='https://mscdownload.pages.dev/' target='_blank'><div class="tool-item"><div class="tool-text">网易云音乐下载</div></div></a>
+                </div>
+                </div>
+                <div class="tab-content" id="ai-tools">
+                    <div class="tool-grid">
+                        <a href='https://chat.openai.com/' target='_blank'><div class="tool-item"><div class="tool-text">ChatGPT</div></div></a>
+                        <a href='https://claude.ai/' target='_blank'><div class="tool-item"><div class="tool-text">Claude</div></div></a>
+                        <a href='https://bard.google.com/' target='_blank'><div class="tool-item"><div class="tool-text">Gemini</div></div></a>
+                        <a href='https://www.perplexity.ai/' target='_blank'><div class="tool-item"><div class="tool-text">Perplexity</div></div></a>
+                        <a href='https://www.wolframalpha.com/' target='_blank'><div class="tool-item"><div class="tool-text">Wolfram Alpha</div></div></a>
+                        <a href='https://huggingface.co/' target='_blank'><div class="tool-item"><div class="tool-text">Hugging Face</div></div></a>
+                        <a href='https://www.midjourney.com/' target='_blank'><div class="tool-item"><div class="tool-text">Midjourney</div></div></a>
+                        <a href='https://yiyan.baidu.com/' target='_blank'><div class="tool-item"><div class="tool-text">文心一言</div></div></a>
+                        <a href='https://www.doubao.com/' target='_blank'><div class="tool-item"><div class="tool-text">豆包</div></div></a>
+                        <a href='https://www.kimi.com/' target='_blank'><div class="tool-item"><div class="tool-text">Kimi</div></div></a>
+                        <a href='https://chatglm.cn/' target='_blank'><div class="tool-item"><div class="tool-text">智谱清言</div></div></a>
+                        <a href='https://yuanbao.tencent.com/' target='_blank'><div class="tool-item"><div class="tool-text">腾讯元宝</div></div></a>
+                        <a href='https://qianwen.aliyun.com/' target='_blank'><div class="tool-item"><div class="tool-text">通义千问</div></div></a>
+                        <a href='https://xinghuo.xfyun.cn/' target='_blank'><div class="tool-item"><div class="tool-text">讯飞星火</div></div></a>
+                    </div>
+                </div>
+                <div class="tab-content" id="file-tools">
+                    <div class="tool-grid">
+                        <a href='https://webrename.cn/' target='_blank'><div class="tool-item"><div class="tool-text">文件批量命名</div></div></a>
+                        <a href='https://convertio.co/zh/' target='_blank'><div class="tool-item"><div class="tool-text">文件格式转换</div></div></a>
+                    </div>
+                </div>
+                <div class="tab-content" id="download-tools">
+                    <div class="tool-grid">
+                        <a href='https://apkcombo.com/zh/' target='_blank'><div class="tool-item"><div class="tool-text">Google软件下载</div></div></a>
+                    </div>
+                </div>
+                <div class="tab-content" id="web-tools">
+                    <div class="tool-grid">
+                        <a href='https://www.mchose.com.cn/#/connectDevice' target='_blank'><div class="tool-item"><div class="tool-text">迈从网页驱动</div></div></a>
+                    </div>
+                </div>
+                <div class="tab-content" id="other-tools">
+                    <div class="tool-grid">
+                    </div>
+                </div>
             </div>
         `
     },
     {
-        title: '收藏资源',
+        title: '资源',
         content: `
-            <div class="tool-grid">
-                <a href='https://next.itellyou.cn/'><div class="tool-item"><div class="tool-text">纯净系统下载</div></div></a>
-                <a href='https://www.galzy.eu.org/'><div class="tool-item"><div class="tool-text">紫缘社</div></div></a>
-                <a href='https://www.cilichi.art/'><div class="tool-item"><div class="tool-text">磁力池</div></div></a>
-                <a href='https://flowus.cn/share/ab4b6b86-34a6-4aa0-a679-b4a221b8e41d?code=CZ3ECT'><div class="tool-item"><div class="tool-text">Adobe全家桶</div></div></a>
-                <a href='https://hacg.me/'><div class="tool-item"><div class="tool-text">琉璃神社</div></div></a>
-                <a href='https://itch.io/'><div class="tool-item"><div class="tool-text">ITCH游戏网站</div></div></a>
-                <a href='https://animes.garden/'><div class="tool-item"><div class="tool-text">动漫花园</div></div></a>
-                <a href='http://dmhy.org/'><div class="tool-item"><div class="tool-text">动漫资源</div></div></a>
+        <div class="nested-tabs">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="system-Resource">系统工具</button>
+                <button class="tab-btn" data-tab="game-Resource">游戏资源</button>
+                <button class="tab-btn" data-tab="anime-Resource">动漫资源</button>
+                <button class="tab-btn" data-tab="other-Resource">其他资源</button>
             </div>
+            <div class="tab-content active" id="system-Resource">
+                <div class="tool-grid">
+                    <a href='https://next.itellyou.cn/' target='_blank'><div class="tool-item"><div class="tool-text">纯净系统下载</div></div></a>
+                </div>
+            </div>
+            <div class="tab-content" id="game-Resource">
+                <div class="tool-grid">
+                    <a href='https://www.galzy.eu.org/' target='_blank'><div class="tool-item"><div class="tool-text">紫缘社</div></div></a>
+                    <a href='https://hacg.me/' target='_blank'><div class="tool-item"><div class="tool-text">琉璃神社</div></div></a>
+                    <a href='https://itch.io/' target='_blank'><div class="tool-item"><div class="tool-text">ITCH游戏网站</div></div></a>
+                </div>
+            </div>
+            <div class="tab-content" id="anime-Resource">
+                <div class="tool-grid">
+                    <a href='https://animes.garden/' target='_blank'><div class="tool-item"><div class="tool-text">动漫花园</div></div></a>
+                    <a href='http://dmhy.org/' target='_blank'><div class="tool-item"><div class="tool-text">动漫资源</div></div></a>
+                </div>
+            </div>
+            <div class="tab-content" id="other-Resource">
+                <div class="tool-grid">
+                    <a href='https://modrinth.com/' target='_blank'><div class="tool-item"><div class="tool-text">Minecraft Mod</div></div></a>
+                </div>
+            </div>
+        </div>
         `
     },
     {
@@ -169,15 +275,13 @@ function debounce(func, wait) {
 function renderBlogs() {
     const blogList = document.getElementById('blog-list');
     if (!blogList) return;
-    
+
     blogList.innerHTML = '';
-    
+
     blogs.forEach((blog) => {
         const post = document.createElement('article');
         post.className = 'blog-post';
-        post.innerHTML = blog.content 
-            ? `<h2>${blog.title}</h2><p>${blog.content}</p>` 
-            : `<h2>${blog.title}</h2>`;
+        post.innerHTML = `<h2>${blog.title}</h2><p>${blog.content}</p>`;
         blogList.appendChild(post);
     });
 }
@@ -199,12 +303,12 @@ function adjustToolItemTextSize() {
     toolItems.forEach(item => {
         const textElement = item.querySelector('.tool-text');
         if (!textElement) return;
-        
+
         textElement.style.fontSize = '';
-        const itemWidth = item.clientWidth - 
-            parseFloat(getComputedStyle(item).paddingLeft) - 
+        const itemWidth = item.clientWidth -
+            parseFloat(getComputedStyle(item).paddingLeft) -
             parseFloat(getComputedStyle(item).paddingRight);
-        
+
         if (textElement.scrollWidth > itemWidth) {
             const scale = Math.min(1, itemWidth / textElement.scrollWidth);
             const baseSize = parseFloat(getComputedStyle(textElement).fontSize);
@@ -227,7 +331,7 @@ function showTooltip(element, text, options = {}) {
     if (existingTooltip) {
         existingTooltip.remove();
     }
-    
+
     const tooltip = document.createElement('div');
     tooltip.className = 'tooltip' + (options.customClass ? ' ' + options.customClass : '');
     tooltip.textContent = text;
@@ -235,14 +339,14 @@ function showTooltip(element, text, options = {}) {
         tooltip.style.cssText = options.customStyle;
     }
     document.body.appendChild(tooltip);
-    
+
     // 计算tooltip位置
     const rect = element.getBoundingClientRect();
     const tooltipRect = tooltip.getBoundingClientRect();
-    
+
     let left = rect.left + (rect.width - tooltipRect.width) / 2;
     let top = rect.top - tooltipRect.height - 8;
-    
+
     // 边界检查
     if (left < 5) left = 5;
     if (left + tooltipRect.width > window.innerWidth - 5) {
@@ -251,14 +355,14 @@ function showTooltip(element, text, options = {}) {
     if (top < 5) {
         top = rect.bottom + 8;
     }
-    
+
     tooltip.style.left = left + 'px';
     tooltip.style.top = top + 'px';
-    
+
     requestAnimationFrame(() => {
         tooltip.classList.add('show');
     });
-    
+
     // 如果设置了duration，自动隐藏
     if (options.duration) {
         setTimeout(() => {
@@ -270,7 +374,7 @@ function showTooltip(element, text, options = {}) {
             }, 300);
         }, options.duration);
     }
-    
+
     return tooltip;
 }
 
@@ -303,7 +407,7 @@ function fallbackCopy(text, element) {
     document.body.appendChild(textarea);
     textarea.focus();
     textarea.select();
-    
+
     try {
         document.execCommand('copy');
         showCopySuccess(element);
@@ -329,14 +433,14 @@ function setupTooltips() {
             showTooltip(target, target.dataset.tooltip);
         }
     });
-    
+
     document.addEventListener('mouseout', (e) => {
         const target = e.target.closest('[data-tooltip]');
         if (target) {
             hideTooltip();
         }
     });
-    
+
     document.addEventListener('click', (e) => {
         const emailElement = e.target.closest('[data-email]');
         if (emailElement) {
@@ -349,10 +453,10 @@ function setupHeaderScroll() {
     let lastScrollTop = 0;
     const header = document.querySelector('.header');
     const scrollThreshold = 100;
-    
+
     window.addEventListener('scroll', () => {
         const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
+
         if (currentScrollTop <= 0) {
             header.classList.remove('hidden');
         } else if (currentScrollTop > lastScrollTop && currentScrollTop > scrollThreshold) {
@@ -360,14 +464,14 @@ function setupHeaderScroll() {
         } else if (currentScrollTop < lastScrollTop) {
             header.classList.remove('hidden');
         }
-        
+
         lastScrollTop = currentScrollTop;
     }, { passive: true });
 }
 
 window.addEventListener('resize', debounce(() => {
     adjustToolItemTextSize();
-    
+
     // 根据窗口宽度动态启用/禁用3D效果
     if (window.innerWidth >= 768) {
         setupCard3DEffect();
@@ -386,10 +490,10 @@ function setupThemeToggle() {
 
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
+
     const lightIcon = themeToggle.querySelector('.theme-light-icon');
     const darkIcon = themeToggle.querySelector('.theme-dark-icon');
-    
+
     if (savedTheme === 'dark' || (!savedTheme)) {
         document.documentElement.setAttribute('data-theme', 'dark');
         if (lightIcon) lightIcon.style.display = 'block';
@@ -401,7 +505,7 @@ function setupThemeToggle() {
 
     themeToggle.addEventListener('click', () => {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        
+
         if (isDark) {
             document.documentElement.removeAttribute('data-theme');
             localStorage.setItem('theme', 'light');
@@ -453,8 +557,8 @@ function setupBackToTop() {
 function setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-        
-        switch(e.key.toLowerCase()) {
+
+        switch (e.key.toLowerCase()) {
             case 't':
                 const themeToggle = document.getElementById('theme-toggle');
                 if (themeToggle && !e.ctrlKey && !e.metaKey) {
@@ -476,28 +580,43 @@ function setupKeyboardShortcuts() {
     });
 }
 
+function setupNestedTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const tabId = btn.dataset.tab;
+            const parent = btn.closest('.nested-tabs');
+
+            parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+            parent.querySelector('#' + tabId).classList.add('active');
+        });
+    });
+}
+
 function setupCard3DEffect() {
     document.querySelectorAll('.blog-post, .tool-item, .contact-gif').forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            
+
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
-            
+
             const deltaX = (x - centerX) / centerX;
             const deltaY = (y - centerY) / centerY;
-            
+
             const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
             const maxDistance = Math.sqrt(2);
             const normalizedDistance = distance / maxDistance;
-            
+
             const translateZ = Math.min(50, normalizedDistance * 60);
             const scale = 1 + (normalizedDistance * 0.03);
             const rotateX = deltaY * 8;
             const rotateY = deltaX * -8;
-            
+
             card.style.transform = `
                 perspective(1000px) 
                 translateZ(${translateZ}px) 
@@ -505,7 +624,7 @@ function setupCard3DEffect() {
                 rotateX(${rotateX}deg) 
                 rotateY(${rotateY}deg)
             `;
-            
+
             card.style.boxShadow = `
                 ${-deltaX * 15}px ${-deltaY * 15}px ${30 + translateZ}px rgba(0, 0, 0, ${0.15 + normalizedDistance * 0.1}),
                 0 0 ${40 + translateZ * 2}px rgba(37, 99, 235, ${0.08 + normalizedDistance * 0.05})
@@ -530,12 +649,14 @@ function initMainContent() {
     secureExternalLinks();
     loadBackgroundImage();
     setupSettingsPanel();
+    setupNestedTabs();
+    updateSchemaJsonLd();
 }
 
 document.addEventListener('loadingComplete', () => {
     initMainContent();
     startCardAnimation();
-    
+
     // 只在桌面端启用3D悬停动画
     if (window.innerWidth >= 768) {
         setTimeout(() => {
@@ -554,25 +675,32 @@ function secureExternalLinks() {
     });
 }
 
-function loadBackgroundImage() {
+function updateSchemaJsonLd() {
+    const schemaScript = document.getElementById('schema-json');
+    if (schemaScript) {
+        try {
+            const schema = JSON.parse(schemaScript.textContent);
+            schema.url = window.location.href;
+            schemaScript.textContent = JSON.stringify(schema);
+        } catch (e) {
+            console.warn('更新 schema JSON-LD 失败:', e);
+        }
+    }
+}
+
+async function loadBackgroundImage() {
     const bgUrl = 'https://t.alcy.cc/ycy';
     const bgLayer = document.getElementById('background-layer');
-    const img = new Image();
-    
-    img.crossOrigin = 'anonymous';
-    
-    img.onload = function() {
+
+    try {
+        await loadImage(bgUrl, { crossOrigin: 'anonymous' });
         if (bgLayer) {
             bgLayer.style.backgroundImage = `url('${bgUrl}')`;
         }
         console.log('✅ 背景图片加载成功');
-    };
-    
-    img.onerror = function() {
+    } catch {
         console.warn('⚠️ 背景图片加载失败');
-    };
-    
-    img.src = bgUrl;
+    }
 }
 
 function setupSettingsPanel() {
@@ -581,19 +709,19 @@ function setupSettingsPanel() {
     const settingsOverlay = document.getElementById('settings-overlay');
     const settingsClose = document.getElementById('settings-close');
     const resetBtn = document.getElementById('reset-settings');
-    
+
     const bgBlurSlider = document.getElementById('bg-blur');
     const bgBrightnessSlider = document.getElementById('bg-brightness');
     const blurValueDisplay = document.getElementById('blur-value');
     const brightnessValueDisplay = document.getElementById('brightness-value');
-    
+
     if (!settingsBtn || !settingsModal) return;
-    
+
     const defaultSettings = {
         blur: 10,
         brightness: 100
     };
-    
+
     function loadSettings() {
         try {
             const savedSettings = localStorage.getItem('backgroundSettings');
@@ -614,7 +742,7 @@ function setupSettingsPanel() {
             applyBackgroundSettings(defaultSettings.blur, defaultSettings.brightness);
         }
     }
-    
+
     function saveSettings(blur, brightness) {
         try {
             const settings = { blur, brightness };
@@ -623,14 +751,14 @@ function setupSettingsPanel() {
             console.warn('保存背景设置失败:', error);
         }
     }
-    
+
     function applyBackgroundSettings(blur, brightness) {
         const bgLayer = document.getElementById('background-layer');
         if (bgLayer) {
             bgLayer.style.filter = `blur(${blur}px) brightness(${brightness / 100})`;
         }
     }
-    
+
     function openSettings() {
         settingsModal.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -663,63 +791,63 @@ function setupSettingsPanel() {
             }
         });
     }
-    
+
     function handleBlurChange(e) {
         const value = parseInt(e.target.value, 10);
         if (blurValueDisplay) blurValueDisplay.textContent = `${value}px`;
-        
+
         const brightnessValue = parseInt(bgBrightnessSlider ? bgBrightnessSlider.value : 100, 10);
         applyBackgroundSettings(value, brightnessValue);
         saveSettings(value, brightnessValue);
     }
-    
+
     function handleBrightnessChange(e) {
         const value = parseInt(e.target.value, 10);
         if (brightnessValueDisplay) brightnessValueDisplay.textContent = `${value}%`;
-        
+
         const blurValue = parseInt(bgBlurSlider ? bgBlurSlider.value : 0, 10);
         applyBackgroundSettings(blurValue, value);
         saveSettings(blurValue, value);
     }
-    
+
     function resetToDefault() {
         applyBackgroundSettings(defaultSettings.blur, defaultSettings.brightness);
         saveSettings(defaultSettings.blur, defaultSettings.brightness);
-        
+
         if (bgBlurSlider) bgBlurSlider.value = defaultSettings.blur;
         if (blurValueDisplay) blurValueDisplay.textContent = `${defaultSettings.blur}px`;
-        
+
         if (bgBrightnessSlider) bgBrightnessSlider.value = defaultSettings.brightness;
         if (brightnessValueDisplay) brightnessValueDisplay.textContent = `${defaultSettings.brightness}%`;
     }
-    
+
     settingsBtn.addEventListener('click', openSettings);
-    
+
     if (settingsClose) {
         settingsClose.addEventListener('click', closeSettings);
     }
-    
+
     if (settingsOverlay) {
         settingsOverlay.addEventListener('click', closeSettings);
     }
-    
+
     if (resetBtn) {
         resetBtn.addEventListener('click', resetToDefault);
     }
-    
+
     if (bgBlurSlider) {
         bgBlurSlider.addEventListener('input', handleBlurChange);
     }
-    
+
     if (bgBrightnessSlider) {
         bgBrightnessSlider.addEventListener('input', handleBrightnessChange);
     }
-    
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && settingsModal.classList.contains('active')) {
             closeSettings();
         }
     });
-    
+
     loadSettings();
 }

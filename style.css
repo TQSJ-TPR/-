@@ -292,6 +292,89 @@ body {
     color: #ffffff;
 }
 
+.nested-tabs {
+    margin-top: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px 24px;
+    padding-bottom: 0;
+}
+
+section#blog-list > article.blog-post:nth-child(1) > div.nested-tabs > div.tab-buttons {
+    margin-left: -30px;
+    margin-right: -30px;
+}
+
+section#blog-list > article.blog-post:nth-child(2) > div.nested-tabs > div.tab-buttons {
+    margin-left: -30px;
+    margin-right: -30px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), #a855f7);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.tab-btn:hover::after {
+    width: 100%;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+}
+
+.tab-btn.active::after {
+    width: 100%;
+}
+
+.tab-content .tool-grid {
+    margin-top: 0;
+}
+
+.tab-content {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+}
+
+.tab-content.active {
+    max-height: 500px;
+    opacity: 1;
+}
+
+.tab-content.active .tool-item {
+    animation: itemFadeIn 0.3s ease forwards;
+}
+
+@keyframes itemFadeIn {
+    from { opacity: 0.7; }
+    to { opacity: 1; }
+}
+
 /* 联系方式区域 */
 .contact-info {
     display: flex;
@@ -480,6 +563,15 @@ pre {
         font-size: 1rem;
     }
 
+    .tab-buttons {
+        gap: 16px;
+    }
+
+    .tab-btn {
+        font-size: 1rem;
+        padding: 10px 0;
+    }
+
     .contact-info {
         gap: 20px;
         padding: 16px 0;
@@ -586,6 +678,16 @@ pre {
         line-height: 1.4;
     }
 
+    .tab-buttons {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        font-size: 0.95rem;
+        padding: 8px 0;
+    }
+
     .contact-info {
         gap: 16px;
         padding: 14px 0;
@@ -623,15 +725,6 @@ pre {
         height: 44px;
         bottom: 16px;
         right: 16px;
-    }
-
-    .player-controls button {
-        width: 36px;
-        height: 36px;
-    }
-
-    .progress-bar {
-        min-width: 120px;
     }
 
     .settings-panel {
@@ -712,6 +805,16 @@ pre {
 
     .tool-text {
         font-size: 0.95rem;
+    }
+
+    .tab-buttons {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        font-size: 0.9rem;
+        padding: 6px 0;
     }
 
     .contact-link {
@@ -913,11 +1016,6 @@ pre {
     fill: currentColor;
     padding: 0;
     overflow: visible;
-}
-
-.player-controls button .icon-svg {
-    width: 18px;
-    height: 18px;
 }
 
 .back-to-top .icon-svg {
