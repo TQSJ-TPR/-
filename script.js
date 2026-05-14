@@ -1,3 +1,5 @@
+const BACKGROUND_IMAGE_URL = 'https://t.alcy.cc/ycy';
+
 function loadImage(url, options = {}) {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -94,11 +96,9 @@ function loadImage(url, options = {}) {
     }
 
     async function loadBackgroundImageFirst() {
-        const bgUrl = 'https://t.alcy.cc/ycy';
-
         try {
-            await loadImage(bgUrl);
-            loadingScreen.style.backgroundImage = `url('${bgUrl}')`;
+            await loadImage(BACKGROUND_IMAGE_URL);
+            loadingScreen.style.backgroundImage = `url('${BACKGROUND_IMAGE_URL}')`;
         } catch {
             console.warn('背景图加载失败，使用黑色背景');
             loadingScreen.style.backgroundColor = '#000000';
@@ -241,7 +241,7 @@ const blogs = [
             </div>
             <div class="tab-content" id="other-Resource">
                 <div class="tool-grid">
-                    <a href='https://modrinth.com/' target='_blank'><div class="tool-item"><div class="tool-text">Minecraft Mod</div></div></a>
+                    <a href='https://modrinth.com/' target='_blank'><div class="tool-item"><div class="tool-text">Minecraft Mod下载</div></div></a>
                 </div>
             </div>
         </div>
@@ -288,15 +288,30 @@ function renderBlogs() {
 }
 
 function startCardAnimation() {
-    const posts = document.querySelectorAll('.blog-post');
-    posts.forEach((post, idx) => {
+    const favorites = getFavorites();
+    const favSection = document.querySelector('.favorites-section');
+    const posts = document.querySelectorAll('.blog-post:not(.favorites-section)');
+
+    let delayOffset = 0;
+    if (favorites.length > 0 && favSection) {
         setTimeout(() => {
-            post.classList.add('show');
-            if (post.querySelector('.tool-grid')) {
-                adjustToolItemTextSize();
-            }
-        }, idx * 150);
-    });
+            favSection.classList.add('show');
+        }, 100);
+        delayOffset = 200;
+    }
+
+    setTimeout(() => {
+        let hasToolGrid = false;
+        posts.forEach((post, idx) => {
+            setTimeout(() => {
+                post.classList.add('show');
+                if (!hasToolGrid && post.querySelector('.tool-grid')) {
+                    hasToolGrid = true;
+                    adjustToolItemTextSize();
+                }
+            }, idx * 200);
+        });
+    }, delayOffset);
 }
 
 function adjustToolItemTextSize() {
@@ -478,7 +493,7 @@ window.addEventListener('resize', debounce(() => {
         setupCard3DEffect();
     } else {
         // 移除3D效果相关的事件监听器
-        document.querySelectorAll('.blog-post, .tool-item, .contact-gif').forEach(card => {
+        document.querySelectorAll('.blog-post:not(.favorites-section), .tool-item:not(.favorite-item), .contact-gif').forEach(card => {
             card.style.transform = '';
             card.style.boxShadow = '';
         });
@@ -596,45 +611,64 @@ function setupNestedTabs() {
     });
 }
 
+function apply3DEffect(element, e) {
+    const rect = element.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const deltaX = (x - centerX) / centerX;
+    const deltaY = (y - centerY) / centerY;
+
+    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    const maxDistance = Math.sqrt(2);
+    const normalizedDistance = distance / maxDistance;
+
+    const translateZ = Math.min(50, normalizedDistance * 60);
+    const scale = 1 + (normalizedDistance * 0.03);
+    const rotateX = deltaY * 8;
+    const rotateY = deltaX * -8;
+
+    element.style.transform = `
+        perspective(1000px) 
+        translateZ(${translateZ}px) 
+        scale(${scale}) 
+        rotateX(${rotateX}deg) 
+        rotateY(${rotateY}deg)
+    `;
+
+    element.style.boxShadow = `
+        ${-deltaX * 15}px ${-deltaY * 15}px ${30 + translateZ}px rgba(0, 0, 0, ${0.15 + normalizedDistance * 0.1}),
+        0 0 ${40 + translateZ * 2}px rgba(37, 99, 235, ${0.08 + normalizedDistance * 0.05})
+    `;
+}
+
+function reset3DEffect(element) {
+    element.style.transform = '';
+    element.style.boxShadow = '';
+}
+
 function setupCard3DEffect() {
-    document.querySelectorAll('.blog-post, .tool-item, .contact-gif').forEach(card => {
+    const cards = document.querySelectorAll('.blog-post:not(.favorites-section), .tool-item:not(.favorite-item), .contact-gif');
+    cards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            const deltaX = (x - centerX) / centerX;
-            const deltaY = (y - centerY) / centerY;
-
-            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            const maxDistance = Math.sqrt(2);
-            const normalizedDistance = distance / maxDistance;
-
-            const translateZ = Math.min(50, normalizedDistance * 60);
-            const scale = 1 + (normalizedDistance * 0.03);
-            const rotateX = deltaY * 8;
-            const rotateY = deltaX * -8;
-
-            card.style.transform = `
-                perspective(1000px) 
-                translateZ(${translateZ}px) 
-                scale(${scale}) 
-                rotateX(${rotateX}deg) 
-                rotateY(${rotateY}deg)
-            `;
-
-            card.style.boxShadow = `
-                ${-deltaX * 15}px ${-deltaY * 15}px ${30 + translateZ}px rgba(0, 0, 0, ${0.15 + normalizedDistance * 0.1}),
-                0 0 ${40 + translateZ * 2}px rgba(37, 99, 235, ${0.08 + normalizedDistance * 0.05})
-            `;
+            apply3DEffect(card, e);
         });
 
         card.addEventListener('mouseleave', () => {
-            card.style.transform = '';
-            card.style.boxShadow = '';
+            reset3DEffect(card);
+        });
+    });
+
+    document.querySelectorAll('.favorites-section').forEach(section => {
+        section.addEventListener('mousemove', (e) => {
+            apply3DEffect(section, e);
+        });
+
+        section.addEventListener('mouseleave', () => {
+            reset3DEffect(section);
         });
     });
 }
@@ -651,19 +685,25 @@ function initMainContent() {
     loadBackgroundImage();
     setupSettingsPanel();
     setupNestedTabs();
-    updateSchemaJsonLd();
 }
 
 document.addEventListener('loadingComplete', () => {
     initMainContent();
-    startCardAnimation();
+    createFavoritesSection();
 
-    // 只在桌面端启用3D悬停动画
+    setTimeout(() => {
+        startCardAnimation();
+    }, 100);
+
     if (window.innerWidth >= 768) {
         setTimeout(() => {
             setupCard3DEffect();
         }, 1500);
     }
+
+    setTimeout(() => {
+        setupDragAndDrop();
+    }, 500);
 });
 
 function secureExternalLinks() {
@@ -690,13 +730,12 @@ function updateSchemaJsonLd() {
 }
 
 async function loadBackgroundImage() {
-    const bgUrl = 'https://t.alcy.cc/ycy';
     const bgLayer = document.getElementById('background-layer');
 
     try {
-        await loadImage(bgUrl, { crossOrigin: 'anonymous' });
+        await loadImage(BACKGROUND_IMAGE_URL, { crossOrigin: 'anonymous' });
         if (bgLayer) {
-            bgLayer.style.backgroundImage = `url('${bgUrl}')`;
+            bgLayer.style.backgroundImage = `url('${BACKGROUND_IMAGE_URL}')`;
         }
         console.log('✅ 背景图片加载成功');
     } catch {
@@ -766,31 +805,13 @@ function setupSettingsPanel() {
     }
 
     function closeSettings() {
-        const panel = settingsModal.querySelector('.settings-panel');
+        settingsModal.classList.add('closing');
+        settingsModal.classList.remove('active');
 
-        settingsModal.classList.remove('closing');
-
-        requestAnimationFrame(() => {
-            settingsModal.classList.add('closing');
-
-            if (panel) {
-                panel.addEventListener('transitionend', function handler(e) {
-                    if (e.propertyName === 'transform') {
-                        panel.removeEventListener('transitionend', handler);
-                        settingsModal.classList.remove('active', 'closing');
-                        document.body.style.overflow = '';
-                    }
-                });
-
-                setTimeout(() => {
-                    settingsModal.classList.remove('active', 'closing');
-                    document.body.style.overflow = '';
-                }, 350);
-            } else {
-                settingsModal.classList.remove('active', 'closing');
-                document.body.style.overflow = '';
-            }
-        });
+        setTimeout(() => {
+            settingsModal.classList.remove('closing');
+            document.body.style.overflow = '';
+        }, 350);
     }
 
     function handleBlurChange(e) {
@@ -851,4 +872,687 @@ function setupSettingsPanel() {
     });
 
     loadSettings();
+}
+
+// ==================== 搜索功能 ====================
+
+// 搜索数据库
+const searchDatabase = [];
+
+// 从blogs数据中直接生成搜索数据
+function initSearchDatabase() {
+    searchDatabase.length = 0;
+    
+    blogs.forEach(blog => {
+        const type = blog.title;
+        
+        // 解析 content 中的选项卡和工具项
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(blog.content, 'text/html');
+        
+        const tabButtons = doc.querySelectorAll('.tab-btn');
+        const tabContents = doc.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach((btn, index) => {
+            const category = btn.textContent.trim();
+            const tabContent = tabContents[index];
+            
+            if (!tabContent) return;
+            
+            const toolItems = tabContent.querySelectorAll('.tool-item');
+            
+            toolItems.forEach(item => {
+                const linkElement = item.closest('a');
+                const toolTextElement = item.querySelector('.tool-text');
+                
+                if (linkElement && toolTextElement) {
+                    searchDatabase.push({
+                        name: toolTextElement.textContent.trim(),
+                        url: linkElement.getAttribute('href'),
+                        category: category,
+                        type: type
+                    });
+                }
+            });
+        });
+    });
+}
+
+// 搜索功能
+function searchItems(query) {
+    if (!query.trim()) {
+        return [];
+    }
+    
+    const lowerQuery = query.toLowerCase();
+    
+    return searchDatabase.filter(item => {
+        return item.name.toLowerCase().includes(lowerQuery) ||
+               item.category.toLowerCase().includes(lowerQuery) ||
+               item.type.toLowerCase().includes(lowerQuery);
+    });
+}
+
+// 显示搜索建议
+function showSuggestions(suggestions) {
+    const suggestionsContainer = document.getElementById('search-suggestions');
+    suggestionsContainer.innerHTML = '';
+    
+    if (suggestions.length === 0) {
+        suggestionsContainer.classList.remove('active');
+        return;
+    }
+    
+    suggestions.forEach(item => {
+        const suggestionDiv = document.createElement('div');
+        suggestionDiv.className = 'suggestion-item';
+        const isFavorite = getFavorites().some(f => f.url === item.url);
+        suggestionDiv.innerHTML = `
+            <div class="suggestion-left">
+                <div class="suggestion-title">${item.name}</div>
+                <div class="suggestion-category">${item.type} - ${item.category}</div>
+            </div>
+            <button class="suggestion-fav-btn ${isFavorite ? 'favorited' : ''}" data-name="${item.name}" data-url="${item.url}">${isFavorite ? '已添加' : '添加到常用'}</button>
+        `;
+        
+        suggestionDiv.querySelector('.suggestion-left').addEventListener('click', () => {
+            window.open(item.url, '_blank');
+            document.getElementById('search-input').value = '';
+            suggestionsContainer.classList.remove('active');
+        });
+
+        const favBtn = suggestionDiv.querySelector('.suggestion-fav-btn');
+        favBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const name = favBtn.getAttribute('data-name');
+            const url = favBtn.getAttribute('data-url');
+            if (favBtn.classList.contains('favorited')) {
+                removeFromFavorites(name, url);
+                favBtn.textContent = '添加到常用';
+                favBtn.classList.remove('favorited');
+            } else {
+                addToFavorites(name, url);
+                favBtn.textContent = '已添加';
+                favBtn.classList.add('favorited');
+            }
+        });
+        
+        suggestionsContainer.appendChild(suggestionDiv);
+    });
+    
+    suggestionsContainer.classList.add('active');
+}
+
+
+
+// 更新建议项选择状态
+function updateSuggestionSelection(suggestions, index) {
+    suggestions.forEach((item, i) => {
+        if (i === index) {
+            item.style.background = 'rgba(139, 92, 246, 0.25)';
+        } else {
+            item.style.background = '';
+        }
+    });
+}
+
+// 初始化搜索功能
+function initSearch() {
+    // 延迟一点时间确保DOM完全渲染
+    setTimeout(() => {
+        initSearchDatabase();
+        setupSearchEvents();
+    }, 100);
+}
+
+// 设置搜索事件
+function setupSearchEvents() {
+    const searchInput = document.getElementById('search-input');
+    const suggestionsContainer = document.getElementById('search-suggestions');
+    
+    if (!searchInput || !suggestionsContainer) return;
+    
+    // 使用防抖函数优化搜索
+    const debouncedSearch = debounce((query) => {
+        const results = searchItems(query);
+        showSuggestions(results);
+    }, 200);
+    
+    searchInput.addEventListener('input', (e) => {
+        debouncedSearch(e.target.value);
+    });
+    
+    // 点击外部关闭建议
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-container')) {
+            suggestionsContainer.classList.remove('active');
+        }
+    });
+    
+    // 键盘导航
+    let selectedIndex = -1;
+    
+    searchInput.addEventListener('keydown', (e) => {
+        const suggestions = suggestionsContainer.querySelectorAll('.suggestion-item');
+        
+        if (suggestions.length === 0) return;
+        
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                selectedIndex = Math.min(selectedIndex + 1, suggestions.length - 1);
+                updateSuggestionSelection(suggestions, selectedIndex);
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                selectedIndex = Math.max(selectedIndex - 1, 0);
+                updateSuggestionSelection(suggestions, selectedIndex);
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (selectedIndex >= 0 && suggestions[selectedIndex]) {
+                    const leftEl = suggestions[selectedIndex].querySelector('.suggestion-left');
+                    if (leftEl) {
+                        leftEl.click();
+                    }
+                }
+                break;
+            case 'Escape':
+                suggestionsContainer.classList.remove('active');
+                selectedIndex = -1;
+                break;
+        }
+    });
+}
+
+// 在页面加载完成后初始化搜索
+document.addEventListener('loadingComplete', () => {
+    initSearch();
+});
+
+// ==================== 常用工具收藏功能 ====================
+
+const FAVORITES_KEY = 'favorite_tools';
+
+function getFavorites() {
+    try {
+        const data = localStorage.getItem(FAVORITES_KEY);
+        return data ? JSON.parse(data) : [];
+    } catch {
+        return [];
+    }
+}
+
+function saveFavorites(favorites) {
+    try {
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    } catch (e) {
+        console.warn('保存收藏数据失败:', e);
+    }
+}
+
+function createFavoritesSection() {
+    const blogList = document.getElementById('blog-list');
+    if (!blogList) return;
+
+    const favoritesSection = document.createElement('article');
+    favoritesSection.className = 'blog-post favorites-section';
+    favoritesSection.id = 'favorites-section';
+    favoritesSection.innerHTML = `
+        <div class="favorites-header">
+            <h2>常用</h2>
+            <button class="remove-all-btn" id="remove-all-fav-btn">移除所有</button>
+        </div>
+        <div class="favorites-grid" id="favorites-grid"></div>
+    `;
+
+    blogList.insertBefore(favoritesSection, blogList.firstChild);
+
+    document.getElementById('remove-all-fav-btn').addEventListener('click', () => {
+        const favorites = getFavorites();
+        if (favorites.length === 0) return;
+        localStorage.removeItem(FAVORITES_KEY);
+        renderFavorites();
+        showNotification('已移除所有常用工具', 'remove');
+    });
+
+    renderFavorites();
+}
+
+function renderFavorites() {
+    const favorites = getFavorites();
+    const grid = document.getElementById('favorites-grid');
+    const section = document.getElementById('favorites-section');
+
+    if (!grid || !section) return;
+
+    if (favorites.length === 0) {
+        section.classList.remove('show');
+        grid.innerHTML = '';
+        return;
+    }
+
+    section.classList.add('show');
+
+    const existingLinks = Array.from(grid.children);
+
+    const currentData = existingLinks.map(link => {
+        const item = link.querySelector('.tool-item');
+        return item ? item.getAttribute('data-url') : null;
+    });
+
+    if (JSON.stringify(favorites.map(f => f.url)) === JSON.stringify(currentData)) {
+        return;
+    }
+
+    grid.innerHTML = '';
+
+    favorites.forEach((fav, index) => {
+        const link = document.createElement('a');
+        link.href = fav.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.innerHTML = `<div class="tool-item favorite-item" data-name="${fav.name}" data-url="${fav.url}" data-index="${index}"><div class="tool-text">${fav.name}</div></div>`;
+        grid.appendChild(link);
+
+        requestAnimationFrame(() => {
+            const textElement = link.querySelector('.tool-text');
+            const item = link.querySelector('.tool-item');
+            if (!textElement || !item) return;
+            const itemWidth = item.clientWidth -
+                parseFloat(getComputedStyle(item).paddingLeft) -
+                parseFloat(getComputedStyle(item).paddingRight);
+
+            if (textElement.scrollWidth > itemWidth) {
+                const scale = itemWidth / textElement.scrollWidth;
+                const baseSize = 16;
+                textElement.style.fontSize = `${baseSize * scale}px`;
+            }
+        });
+    });
+}
+
+function addToFavorites(name, url) {
+    const favorites = getFavorites();
+    const exists = favorites.some(f => f.url === url);
+    if (exists) {
+        showNotification('该工具已在常用工具中', 'add');
+        return false;
+    }
+    favorites.push({ name, url });
+    saveFavorites(favorites);
+    renderFavorites();
+    showNotification(`已添加「${name}」到常用工具`, 'add');
+    return true;
+}
+
+function removeFromFavorites(name, url) {
+    let favorites = getFavorites();
+    favorites = favorites.filter(f => f.url !== url);
+    saveFavorites(favorites);
+    renderFavorites();
+    showNotification(`已从常用工具移除「${name}」`, 'remove');
+}
+
+function showNotification(message, type) {
+    const existing = document.querySelector('.add-success-notification, .remove-success-notification');
+    if (existing) {
+        existing.remove();
+    }
+
+    const notification = document.createElement('div');
+    notification.className = type === 'add' ? 'add-success-notification' : 'remove-success-notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    requestAnimationFrame(() => {
+        notification.classList.add('show');
+    });
+
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 300);
+    }, 2000);
+}
+
+function setupDragAndDrop() {
+    let isDragging = false;
+    let dragData = null;
+    let dragPreview = null;
+    let dropZones = [];
+    let isFavoriteDrag = false;
+    let currentDragSource = null;
+    let currentDragLink = null;
+    let currentElementLink = null;
+    let currentPressTimer = null;
+    let currentDisableTimer = null;
+    let currentHasFired = false;
+    let currentMoveHandler = null;
+    let isPressActive = false;
+
+    function createDropZones(mode) {
+        removeDropZones();
+
+        const bottomZone = document.createElement('div');
+        bottomZone.className = 'drop-zone bottom';
+        bottomZone.innerHTML = `<div class="drop-zone-text">${mode === 'add' ? '拖拽到此添加到常用' : '拖拽到此处删除'}</div>`;
+
+        document.body.appendChild(bottomZone);
+
+        dropZones = [bottomZone];
+
+        requestAnimationFrame(() => {
+            bottomZone.classList.add('visible');
+        });
+
+        return dropZones;
+    }
+
+    function removeDropZones() {
+        dropZones.forEach(zone => {
+            if (zone.parentNode) {
+                zone.remove();
+            }
+        });
+        dropZones = [];
+    }
+
+    function createDragPreview(element) {
+        if (dragPreview) {
+            dragPreview.remove();
+        }
+
+        const textElement = element.querySelector('.tool-text');
+        const text = textElement ? textElement.textContent : '';
+
+        dragPreview = document.createElement('div');
+        dragPreview.className = 'drag-preview';
+        dragPreview.innerHTML = `<div class="tool-text">${text}</div>`;
+        document.body.appendChild(dragPreview);
+
+        return dragPreview;
+    }
+
+    function removeDragPreview() {
+        if (dragPreview && dragPreview.parentNode) {
+            dragPreview.remove();
+        }
+        dragPreview = null;
+    }
+
+    function startDrag(element, mode) {
+        isDragging = true;
+        isFavoriteDrag = mode === 'remove';
+        currentDragSource = element;
+        currentDragLink = element.closest('a');
+
+        const textElement = element.querySelector('.tool-text');
+        const linkElement = element.closest('a');
+
+        dragData = {
+            name: textElement ? textElement.textContent : '',
+            url: linkElement ? linkElement.href : ''
+        };
+
+        element.classList.add('dragging');
+        createDragPreview(element);
+        createDropZones(mode);
+
+        document.addEventListener('mousemove', onDragMove);
+        document.addEventListener('touchmove', onTouchMove, { passive: false });
+    }
+
+    function onDragMove(e) {
+        if (!isDragging || !dragPreview) return;
+
+        const x = e.clientX;
+        const y = e.clientY;
+
+        dragPreview.style.left = (x - dragPreview.offsetWidth / 2) + 'px';
+        dragPreview.style.top = (y - dragPreview.offsetHeight / 2) + 'px';
+
+        checkDropZoneHover(x, y);
+    }
+
+    function onTouchMove(e) {
+        if (!isDragging || !dragPreview) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const x = touch.clientX;
+        const y = touch.clientY;
+
+        dragPreview.style.left = (x - dragPreview.offsetWidth / 2) + 'px';
+        dragPreview.style.top = (y - dragPreview.offsetHeight / 2) + 'px';
+
+        checkDropZoneHover(x, y);
+    }
+
+    function checkDropZoneHover(x, y) {
+        dropZones.forEach(zone => {
+            const rect = zone.getBoundingClientRect();
+            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                zone.classList.add('drag-over-active');
+            } else {
+                zone.classList.remove('drag-over-active');
+            }
+        });
+    }
+
+    function endDrag(x, y) {
+        isDragging = false;
+        if (currentDragSource) {
+            currentDragSource.classList.remove('dragging');
+        }
+
+        removeDragPreview();
+
+        if (currentDragLink) {
+            currentDragLink.style.pointerEvents = '';
+        }
+
+        dropZones.forEach(zone => {
+            const rect = zone.getBoundingClientRect();
+            if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+                if (isFavoriteDrag) {
+                    if (dragData) {
+                        removeFromFavorites(dragData.name, dragData.url);
+                    }
+                } else {
+                    if (dragData) {
+                        addToFavorites(dragData.name, dragData.url);
+                    }
+                }
+            }
+            zone.classList.remove('drag-over-active');
+        });
+
+        removeDropZones();
+
+        document.removeEventListener('mousemove', onDragMove);
+        document.removeEventListener('mouseup', onDragEnd);
+        document.removeEventListener('touchmove', onTouchMove);
+        document.removeEventListener('touchend', onTouchEnd);
+
+        dragData = null;
+        currentDragSource = null;
+        currentDragLink = null;
+    }
+
+    function resetAllStates() {
+        if (currentDisableTimer) {
+            clearTimeout(currentDisableTimer);
+            currentDisableTimer = null;
+        }
+        if (currentPressTimer) {
+            clearTimeout(currentPressTimer);
+            currentPressTimer = null;
+        }
+        if (currentElementLink) {
+            currentElementLink.style.pointerEvents = '';
+        }
+        if (currentDragSource && currentDragSource.classList.contains('dragging')) {
+            currentDragSource.classList.remove('dragging');
+        }
+        if (currentMoveHandler) {
+            document.removeEventListener('mousemove', currentMoveHandler);
+            currentMoveHandler = null;
+        }
+        currentElementLink = null;
+        currentDragSource = null;
+        currentHasFired = false;
+        currentPressTimer = null;
+        currentDisableTimer = null;
+        isPressActive = false;
+    }
+
+    function initLongPress(element, mode) {
+        let startX = 0;
+        let startY = 0;
+        const MOVE_THRESHOLD = 8;
+        const CLICK_DISABLE_TIME = 150;
+        const LONG_PRESS_TIME = 400;
+        const linkElement = element.closest('a');
+
+        function disableLinkClick() {
+            if (linkElement) {
+                linkElement.style.pointerEvents = 'none';
+            }
+        }
+
+        function preventLinkClick(e) {
+            if (isPressActive || isDragging) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+        }
+
+        if (linkElement) {
+            linkElement.addEventListener('click', preventLinkClick, true);
+        }
+
+        function startPress(e) {
+            if (isDragging || isPressActive || currentPressTimer) return;
+            e.stopPropagation();
+
+            const point = e.touches ? e.touches[0] : e;
+            startX = point.clientX;
+            startY = point.clientY;
+            currentDragSource = element;
+            currentElementLink = linkElement;
+            isPressActive = true;
+
+            currentDisableTimer = setTimeout(() => {
+                disableLinkClick();
+                currentDisableTimer = null;
+            }, CLICK_DISABLE_TIME);
+
+            currentPressTimer = setTimeout(() => {
+                isPressActive = false;
+                currentHasFired = true;
+                currentPressTimer = null;
+                clearTimeout(currentDisableTimer);
+                currentDisableTimer = null;
+                startDrag(element, mode);
+            }, LONG_PRESS_TIME);
+        }
+
+        function checkMove(e) {
+            if (!isPressActive || currentHasFired) return;
+            const point = e.touches ? e.touches[0] : e;
+            const dx = point.clientX - startX;
+            const dy = point.clientY - startY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            if (distance > MOVE_THRESHOLD) {
+                resetAllStates();
+            }
+        }
+
+        element.addEventListener('mousedown', startPress);
+        element.addEventListener('touchstart', startPress, { passive: true });
+        currentMoveHandler = checkMove;
+        document.addEventListener('mousemove', currentMoveHandler);
+        document.addEventListener('touchmove', checkMove, { passive: true });
+    }
+
+    document.addEventListener('mouseup', (e) => {
+        if (!isDragging) {
+            resetAllStates();
+            return;
+        }
+        endDrag(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('touchend', (e) => {
+        if (!isDragging) {
+            resetAllStates();
+            return;
+        }
+        const touch = e.changedTouches[0];
+        endDrag(touch.clientX, touch.clientY);
+    });
+
+    document.addEventListener('touchcancel', () => {
+        if (isDragging) {
+            endDrag(0, 0);
+        } else {
+            resetAllStates();
+        }
+    });
+
+    const observer = new MutationObserver(() => {
+        document.querySelectorAll('.tool-item:not(.favorite-item):not([data-drag-initialized="add"])').forEach(item => {
+            item.setAttribute('data-drag-initialized', 'add');
+            initLongPress(item, 'add');
+        });
+
+        document.querySelectorAll('.favorite-item:not([data-drag-initialized="remove"])').forEach(item => {
+            item.setAttribute('data-drag-initialized', 'remove');
+            initLongPress(item, 'remove');
+        });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    document.querySelectorAll('.tool-item:not(.favorite-item)').forEach(item => {
+        item.setAttribute('data-drag-initialized', 'add');
+        initLongPress(item, 'add');
+    });
+
+    document.querySelectorAll('.favorite-item').forEach(item => {
+        item.setAttribute('data-drag-initialized', 'remove');
+        initLongPress(item, 'remove');
+    });
+
+    document.addEventListener('dragstart', (e) => {
+        const toolItem = e.target.closest('.tool-item');
+        if (toolItem) {
+            e.preventDefault();
+            return;
+        }
+        const link = e.target.closest('a');
+        if (link && link.querySelector('.tool-item')) {
+            e.preventDefault();
+        }
+    });
+
+    function preventLinkDrag(e) {
+        e.preventDefault();
+    }
+
+    document.querySelectorAll('a').forEach(link => {
+        link.addEventListener('dragstart', preventLinkDrag);
+    });
+
+    const linkObserver = new MutationObserver(() => {
+        document.querySelectorAll('a:not([data-drag-prevented])').forEach(link => {
+            link.setAttribute('data-drag-prevented', 'true');
+            link.addEventListener('dragstart', preventLinkDrag);
+        });
+    });
+    linkObserver.observe(document.body, { childList: true, subtree: true });
 }
