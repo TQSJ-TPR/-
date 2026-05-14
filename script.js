@@ -981,6 +981,15 @@ function showSuggestions(suggestions) {
     });
     
     suggestionsContainer.classList.add('active');
+    
+    // 移动端优化：确保建议弹窗位置正确
+    if (window.innerWidth <= 768) {
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer) {
+            const rect = searchContainer.getBoundingClientRect();
+            suggestionsContainer.style.top = (rect.bottom + 8) + 'px';
+        }
+    }
 }
 
 
@@ -1028,6 +1037,11 @@ function setupSearchEvents() {
             suggestionsContainer.classList.remove('active');
         }
     });
+    
+    // 移动端滚动时关闭建议
+    window.addEventListener('scroll', () => {
+        suggestionsContainer.classList.remove('active');
+    }, { passive: true });
     
     // 键盘导航
     let selectedIndex = -1;
