@@ -167,6 +167,7 @@ const blogs = [
                 <a href='https://fish.audio/zh-CN/app/text-to-speech/' target='_blank'><div class="tool-item"><div class="tool-text">语音克隆</div></div></a>
                 <a href='https://vocalremover.org/zh/' target='_blank'><div class="tool-item"><div class="tool-text">音频人声分离</div></div></a>
                 <a href='https://mscdownload.pages.dev/' target='_blank'><div class="tool-item"><div class="tool-text">网易云音乐下载</div></div></a>
+                <a href='https://kqwyygszh.pages.dev/' target='_blank'><div class="tool-item"><div class="tool-text">酷Q网音乐格式转换</div></div></a>
                 </div>
                 </div>
                 <div class="tab-content" id="ai-tools">
@@ -191,20 +192,48 @@ const blogs = [
                     <div class="tool-grid">
                         <a href='https://webrename.cn/' target='_blank'><div class="tool-item"><div class="tool-text">文件批量命名</div></div></a>
                         <a href='https://convertio.co/zh/' target='_blank'><div class="tool-item"><div class="tool-text">文件格式转换</div></div></a>
+                        <a href='https://v.magiconch.com/epub-transform.html' target='_blank'><div class="tool-item"><div class="tool-text">EPUB繁简转换</div></div></a>
                     </div>
                 </div>
                 <div class="tab-content" id="download-tools">
                     <div class="tool-grid">
-                        <a href='https://apkcombo.com/zh/' target='_blank'><div class="tool-item"><div class="tool-text">Google软件下载</div></div></a>
+                        <a href='https://apkcombo.com/zh/' target='_blank'><div class="tool-item"><div class="tool-text">Google软件下载-1</div></div></a>
+                        <a href='https://mi9.com/apk-downloader/' target='_blank'><div class="tool-item"><div class="tool-text">Google软件下载-2</div></div></a>
+                        <a href='https://github.akams.cn/' target='_blank'><div class="tool-item"><div class="tool-text">Github下载加速</div></div></a>
+                        <a href='https://store.rg-adguard.net/' target='_blank'><div class="tool-item"><div class="tool-text">微软商店下载解析</div></div></a>
+
+
                     </div>
                 </div>
                 <div class="tab-content" id="web-tools">
                     <div class="tool-grid">
                         <a href='https://www.mchose.com.cn/#/connectDevice' target='_blank'><div class="tool-item"><div class="tool-text">迈从网页驱动</div></div></a>
+                        <a href='https://peq.szwalkplay.com/' target='_blank'><div class="tool-item"><div class="tool-text">EPZ网页驱动</div></div></a>
+                        <a href='https://ajazz.driveall.cn/#/' target='_blank'><div class="tool-item"><div class="tool-text">黑爵网页驱动</div></div></a>
                     </div>
                 </div>
                 <div class="tab-content" id="other-tools">
                     <div class="tool-grid">
+                    <a href='https://quafu.baqis.ac.cn/' target='_blank'><div class="tool-item"><div class="tool-text">量子计算机</div></div></a>
+                    <a href='https://maiimg.com/' target='_blank'><div class="tool-item"><div class="tool-text">链接/二维码生成</div></div></a>
+                    <a href='https://imiku.netlify.app/' target='_blank'><div class="tool-item"><div class="tool-text">Miku工具合集</div></div></a>
+                    <a href='https://toolwa.com/' target='_blank'><div class="tool-item"><div class="tool-text">工具蛙工具合集</div></div></a>
+                    <a href='https://cocogoat.work/' target='_blank'><div class="tool-item"><div class="tool-text">椰羊</div></div></a>
+                    <a href='https://www.openfrp.net/' target='_blank'><div class="tool-item"><div class="tool-text">OpenFRP开放映射</div></div></a>
+                    <a href='https://yal.cc/r/terrasavr/?q=lights' target='_blank'><div class="tool-item"><div class="tool-text">泰拉瑞亚存档编辑</div></div></a>
+                    <a href='https://easylink.cc/' target='_blank'><div class="tool-item"><div class="tool-text">云链接生成</div></div></a>
+                    <a href='https://antping.com/' target='_blank'><div class="tool-item"><div class="tool-text">一站式网络工具</div></div></a>
+                    <a href='https://www.midiclouds.com/' target='_blank'><div class="tool-item"><div class="tool-text">Midi下载</div></div></a>
+                    <a href='https://steam.design/' target='_blank'><div class="tool-item"><div class="tool-text">Steam主页美化</div></div></a>
+                    <a href='https://cobalt.tools/' target='_blank'><div class="tool-item"><div class="tool-text">视频/图片解析</div></div></a>
+                    <a href='https://shua.leyz.top/sl/' target='_blank'><div class="tool-item"><div class="tool-text">流量消失器</div></div></a>
+                    <a href='https://www.steambot.info/' target='_blank'><div class="tool-item"><div class="tool-text">Steam bot</div></div></a>
+                    <a href='https://clash-verge-rev.org/' target='_blank'><div class="tool-item"><div class="tool-text">Clash verge rev</div></div></a>
+                    <a href='https://icon666.com/zh' target='_blank'><div class="tool-item"><div class="tool-text">SVG/PNG图标</div></div></a>
+                    <a href='https://base64.guru/' target='_blank'><div class="tool-item"><div class="tool-text">Base64编码/解码</div></div></a>
+                    <a href='https://mbsifu.com/library/game/cs2/command/' target='_blank'><div class="tool-item"><div class="tool-text">CS2指令大全</div></div></a>
+                    <a href='https://mbsifu.com/library/game/csgo/command?page=1' target='_blank'><div class="tool-item"><div class="tool-text">CSGO指令大全</div></div></a>
+                    <a href='https://mbsifu.com/library/game/csgo/pro_player_data/' target='_blank'><div class="tool-item"><div class="tool-text">CS职业信息</div></div></a>
                     </div>
                 </div>
             </div>
@@ -215,7 +244,7 @@ const blogs = [
         content: `
         <div class="nested-tabs">
             <div class="tab-buttons">
-                <button class="tab-btn active" data-tab="system-Resource">系统工具</button>
+                <button class="tab-btn active" data-tab="system-Resource">系统资源</button>
                 <button class="tab-btn" data-tab="game-Resource">游戏资源</button>
                 <button class="tab-btn" data-tab="anime-Resource">动漫资源</button>
                 <button class="tab-btn" data-tab="other-Resource">其他资源</button>
